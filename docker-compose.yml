@@ -1,0 +1,34 @@
+version: '3.4'
+
+services:
+  storeservices.api.author:
+    image: ${DOCKER_REGISTRY-}storeservicesapiauthor
+    build:
+      context: .
+      dockerfile: StoreServices.API.Author/Dockerfile
+
+  storeservices.api.book:
+    image: ${DOCKER_REGISTRY-}storeservicesapibook
+    build:
+      context: .
+      dockerfile: StoreServices.API.Book/Dockerfile
+
+  storeservices.api.shoppingcart:
+    image: ${DOCKER_REGISTRY-}storeservicesapishoppingcart
+    build:
+      context: .
+      dockerfile: StoreServices.API.ShoppingCart/Dockerfile
+
+  storeservices.api.gateway:
+    image: ${DOCKER_REGISTRY-}storeservicesapigateway
+    build:
+      context: .
+      dockerfile: StoreServices.Api.Gateway/Dockerfile
+
+networks:
+  default:
+    external:
+      name: microservicenet
+
+
+
