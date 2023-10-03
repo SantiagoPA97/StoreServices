@@ -8,6 +8,7 @@
 
         #region Navigation Properties
         public Guid AuthorID { get; set; }
+        public Author Author { get; set; }
         #endregion
     }
 }

@@ -1,6 +1,8 @@
 ﻿using FluentValidation;
 using MediatR;
 using StoreServices.API.Book.Persistency;
+using StoreServices.RabbitMQ.Bus.Bus;
+using StoreServices.RabbitMQ.Bus.EventQueue;
 
 namespace StoreServices.API.Book.Application
 {
@@ -12,7 +14,7 @@ namespace StoreServices.API.Book.Application
             public DateTime? PublicationDate { get; set; }
             public Guid AuthorID { get; set; }
         }
-          
+
         public class CreateBookRequestValidation : AbstractValidator<CreateBookRequest>
         {
             public CreateBookRequestValidation()
@@ -26,9 +28,11 @@ namespace StoreServices.API.Book.Application
         public class Handler : IRequestHandler<CreateBookRequest>
         {
             private readonly BookContext _context;
-            public Handler(BookContext context)
+            private readonly IRabbitEventBus _rabbitEventBus;
+            public Handler(BookContext context, IRabbitEventBus rabbitEventBus)
             {
                 _context = context;
+                _rabbitEventBus = rabbitEventBus;
             }
 
             public async Task<Unit> Handle(CreateBookRequest request, CancellationToken cancellationToken)
@@ -43,7 +47,11 @@ namespace StoreServices.API.Book.Application
                 await _context.Books.AddAsync(book);
                 var result = await _context.SaveChangesAsync();
 
-                if(result > 0) return Unit.Value;
+                if (result > 0)
+                {
+                    _rabbitEventBus.Publish(new EmailEventQueue("pelaezas007@gmail.com", request.Title, "Book"));
+                    return Unit.Value;
+                }
 
                 throw new Exception("Error creating the book");
             }

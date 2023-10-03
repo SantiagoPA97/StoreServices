@@ -20,6 +20,7 @@ services:
   storeservices.api.gateway:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - Services__Author=http://storeservices.api.gateway
     depends_on:
       - storeservices.api.book
     ports:
